@@ -1,0 +1,72 @@
+openapi: 3.0.0
+info:
+  title: Cam4Learn
+  version: 1.0.0 
+  description: Backend part of project.
+paths:
+  /login:
+    post:
+      summary: "User login"
+      description: ""
+      requestBody:
+        description: "User login data"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+      responses:
+        400:
+          description: "Missed field"
+        401:
+          description: "Wrong login or password"
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  JWT:
+                    type: string
+  /adminLogin:
+    post:
+      summary: "Admin login"
+      description: ""
+      requestBody:
+        description: "Admin login data"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+      responses:
+        400:
+          description: "Missed field"
+        401:
+          description: "Wrong login or password"
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  JWT:
+                    type: string
