@@ -23,6 +23,9 @@ paths:
                   type: string
                 password:
                   type: string
+              example:
+                login: Ricardo
+                password: 1223SW
       responses:
         400:
           description: "Missed field"
@@ -56,6 +59,9 @@ paths:
                   type: string
                 password:
                   type: string
+              example:
+                login: Ricardo
+                password: 1223SW
       responses:
         400:
           description: "Missed field"
