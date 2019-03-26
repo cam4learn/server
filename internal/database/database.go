@@ -56,10 +56,6 @@ func GetAdminID(loginData authorizationdata.Set) int {
 	return result
 }
 
-func DeleteSubject(ID int) {
-	dbInstance.Exec("delete from Subject where ID=(?)", ID)
-}
-
 func IsExistsLector(ID int) bool {
 	var result bool
 	err := dbInstance.QueryRow("select count(*) from Lector where ID = (?)", ID).Scan(&result)
@@ -67,8 +63,4 @@ func IsExistsLector(ID int) bool {
 		return false
 	}
 	return result
-}
-
-func AddSubject(form registration.SubjectData) {
-	dbInstance.Exec("insert into Subject (LectorID, Title) values (?),(?)", form.LectorID, form.Title)
 }
