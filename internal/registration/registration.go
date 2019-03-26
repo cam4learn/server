@@ -1,8 +1,8 @@
 package registration
 
-type basicData struct {
-	Name    string `form:"name" json:"name" binding:"required"`
-	Surname string `form:"surname" json:"surname" binding:"required"`
+type AuthData struct {
+	Login    string `form:"login" json:"login" binding:"required"`
+	Password string `form:"password" json:"password" binding:"required"`
 }
 
 type LectorData struct {

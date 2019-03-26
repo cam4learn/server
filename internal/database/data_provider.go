@@ -33,3 +33,9 @@ func GetLectorsList() []Lector {
 	result := dbRowsToObjects(resultRows, &Lector{}).([]Lector)
 	return result
 }
+
+func GetLectorPassword(ID int) string {
+	var result string
+	dbInstance.QueryRow("select Password from Lector where ID = (?)", ID).Scan(&result)
+	return result
+}

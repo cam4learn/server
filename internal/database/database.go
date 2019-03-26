@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"server/internal/authorizationdata"
-	"server/registration"
 
 	_ "github.com/go-sql-driver/mysql"
 )

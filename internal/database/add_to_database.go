@@ -5,3 +5,8 @@ import "server/internal/registration"
 func AddSubject(form registration.SubjectData) {
 	dbInstance.Exec("insert into Subject (LectorID, Title) values (?),(?)", form.LectorID, form.Title)
 }
+
+func AddLector(form registration.LectorData) {
+	dbInstance.Exec("insert into Lector (Name, Surname, Login, Password) values ((?), (?), (?), (?))",
+		form.Name, form.Surname, form.Login, form.Password)
+}

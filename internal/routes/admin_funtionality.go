@@ -5,11 +5,18 @@ import (
 	"server/internal/authorization"
 	"server/internal/authorizationdata"
 	"server/internal/database"
-	"server/registration"
+	"server/internal/registration"
+	"server/internal/validator"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
+
+var errorCodes = map[string]int{
+	"Name":       1,
+	"Surname":    2,
+	"Login data": 3,
+}
 
 func setAdminRoutes(group *gin.RouterGroup) {
 	adminGroup := group.Group("/admin", adminMiddleware)
@@ -18,8 +25,10 @@ func setAdminRoutes(group *gin.RouterGroup) {
 	adminGroup.DELETE("/deleteSubject", deleteSubjectHandler)
 	adminGroup.GET("/info/subjects", getSubjectsHandler)
 
+	adminGroup.POST("addLector", addLectorHandler)
 	adminGroup.DELETE("/deleteLector", deleteLectorHandler)
 	adminGroup.GET("/info/lectors", getLectorsHandler)
+	adminGroup.PUT("/changeLector", changeLectorHandler)
 }
 
 func adminMiddleware(c *gin.Context) {
@@ -32,7 +41,6 @@ func adminMiddleware(c *gin.Context) {
 }
 
 func getAdminToken(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
 	login, password := getInput(c)
 	loginStruct := authorizationdata.Set{
 		Login:     login,
@@ -62,13 +70,7 @@ func deleteSubjectHandler(c *gin.Context) {
 	c.AbortWithStatus(http.StatusBadRequest)
 }
 
-func getSubjectsHandler(c *gin.Context) {
-	data := database.GetSubjectsList()
-	c.JSON(http.StatusOK, data)
-}
-
 func addSubjectHandler(c *gin.Context) {
-	c.Header("Access-Control-Allow-Origin", "*")
 	var subject registration.SubjectData
 	if c.Bind(&subject) == nil && len(subject.Title) > 3 && database.IsExistsLector(subject.LectorID) {
 		database.AddSubject(subject)
@@ -85,7 +87,7 @@ func deleteLectorHandler(c *gin.Context) {
 		return
 	}
 	id, err := strconv.Atoi(idString)
-	if err == nil {
+	if err == nil && database.IsExistsLector(id) {
 		database.DeleteLector(id)
 		c.Status(http.StatusOK)
 		return
@@ -96,4 +98,47 @@ func deleteLectorHandler(c *gin.Context) {
 func getLectorsHandler(c *gin.Context) {
 	data := database.GetLectorsList()
 	c.JSON(http.StatusOK, data)
+}
+
+func addLectorHandler(c *gin.Context) {
+	var lector registration.LectorData
+	if c.Bind(&lector) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	ok, err := validator.Validate(lector)
+	if ok && err == nil {
+		database.AddLector(lector)
+		c.Status(http.StatusOK)
+		return
+	}
+	c.JSON(http.StatusBadRequest, gin.H{"code": err.Error()})
+}
+
+func changeLectorHandler(c *gin.Context) {
+	idString, ok := c.GetPostForm("lectorId")
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "NO_ID"})
+		return
+	}
+	id, err := strconv.Atoi(idString)
+	if err != nil || !database.IsExistsLector(id) {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "WRONG_ID"})
+		return
+	}
+	var lector registration.LectorData
+	if c.Bind(&lector) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	if len(lector.Password) == 0 {
+		lector.Password = database.GetLectorPassword(id)
+	}
+	valid, errValid := validator.Validate(lector)
+	if !valid && errValid != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": err.Error()})
+		return
+	}
+	database.UpdateLector(lector, id)
+	c.Status(http.StatusOk)
 }
