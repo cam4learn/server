@@ -27,3 +27,9 @@ func dbRowsToObjects(rows *sql.Rows, destinationType DataStructureBinder) interf
 	}
 	return result.Interface()
 }
+
+func GetLectorsList() []Lector {
+	resultRows, _ := dbInstance.Query("select ID, Name, Surname from Lector")
+	result := dbRowsToObjects(resultRows, &Lector{}).([]Lector)
+	return result
+}

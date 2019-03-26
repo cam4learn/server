@@ -12,10 +12,14 @@ import (
 )
 
 func setAdminRoutes(group *gin.RouterGroup) {
-	newGroup := group.Group("/admin", adminMiddleware)
-	newGroup.POST("/addSubject", addSubjectHandler)
-	newGroup.DELETE("/deleteSubject", deleteSubjectHandler)
-	newGroup.GET("/info/subjects", getSubjectsToDelete)
+	adminGroup := group.Group("/admin", adminMiddleware)
+
+	adminGroup.POST("/addSubject", addSubjectHandler)
+	adminGroup.DELETE("/deleteSubject", deleteSubjectHandler)
+	adminGroup.GET("/info/subjects", getSubjectsHandler)
+
+	adminGroup.DELETE("/deleteLector", deleteLectorHandler)
+	adminGroup.GET("/info/lectors", getLectorsHandler)
 }
 
 func adminMiddleware(c *gin.Context) {
@@ -58,7 +62,7 @@ func deleteSubjectHandler(c *gin.Context) {
 	c.AbortWithStatus(http.StatusBadRequest)
 }
 
-func getSubjectsToDelete(c *gin.Context) {
+func getSubjectsHandler(c *gin.Context) {
 	data := database.GetSubjectsList()
 	c.JSON(http.StatusOK, data)
 }
@@ -72,4 +76,24 @@ func addSubjectHandler(c *gin.Context) {
 		return
 	}
 	c.AbortWithStatus(http.StatusBadRequest)
+}
+
+func deleteLectorHandler(c *gin.Context) {
+	idString, ok := c.GetPostForm("id")
+	if !ok {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(idString)
+	if err == nil {
+		database.DeleteLector(id)
+		c.Status(http.StatusOK)
+		return
+	}
+	c.AbortWithStatus(http.StatusBadRequest)
+}
+
+func getLectorsHandler(c *gin.Context) {
+	data := database.GetLectorsList()
+	c.JSON(http.StatusOK, data)
 }
