@@ -140,5 +140,5 @@ func changeLectorHandler(c *gin.Context) {
 		return
 	}
 	database.UpdateLector(lector, id)
-	c.Status(http.StatusOk)
+	c.Status(http.StatusOK)
 }
