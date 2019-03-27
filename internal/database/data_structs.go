@@ -15,7 +15,7 @@ func (s *Subject) BindToFields(row *sql.Rows) {
 
 type Lector struct {
 	ID      int    `json:"id"`
-	Name    string `json:"title"`
+	Name    string `json:"name"`
 	Surname string `json:"surname"`
 }
 

@@ -12,22 +12,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var errorCodes = map[string]int{
-	"Name":       1,
-	"Surname":    2,
-	"Login data": 3,
-}
-
 func setAdminRoutes(group *gin.RouterGroup) {
 	adminGroup := group.Group("/admin", adminMiddleware)
 
 	adminGroup.POST("/addSubject", addSubjectHandler)
 	adminGroup.DELETE("/deleteSubject", deleteSubjectHandler)
-	adminGroup.GET("/info/subjects", getSubjectsHandler)
+	adminGroup.GET("/getSubjects", getSubjectsHandler)
 
 	adminGroup.POST("addLector", addLectorHandler)
 	adminGroup.DELETE("/deleteLector", deleteLectorHandler)
-	adminGroup.GET("/info/lectors", getLectorsHandler)
+	adminGroup.GET("/getLectors", getLectorsHandler)
 	adminGroup.PUT("/changeLector", changeLectorHandler)
 }
 
