@@ -6,8 +6,8 @@ import (
 
 func RequestPermission(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
-	c.Header("Access-Control-Allow-Headers", "AuthID,Origin, X-Requested-With, Content-Type, Accept, JWT")
-	c.Header("Access-Control-Allow-Methods", "PUT, DELETE")
+	c.Header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, JWT")
+	c.Header("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS, POST, PUT, DELETE")
 	if c.Request.Method == "OPTIONS" {
 		c.AbortWithStatus(204)
 	} else {
