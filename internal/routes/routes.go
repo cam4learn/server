@@ -12,11 +12,16 @@ import (
 func CreateRoutes() *gin.Engine {
 	result := gin.Default()
 	result.POST("/adminLogin", getAdminToken)
+	result.POST("/adminLogin/", getAdminToken)
 	result.POST("/login", getToken)
+	result.POST("/login/", getToken)
 	result.Use(RequestPermission)
+	result.Static("/swaggerui/", "./swaggerui")
 	authorized := result.Group("/api", authMiddleware)
 	authorized.GET("/getSubjects", getSubjectsHandler)
 	authorized.GET("/getLectorSubjects", getLectorSubjectsHandler)
+	authorized.GET("/getSubjects/", getSubjectsHandler)
+	authorized.GET("/getLectorSubjects/", getLectorSubjectsHandler)
 
 	setAdminRoutes(authorized)
 	return result
@@ -32,7 +37,11 @@ func authMiddleware(c *gin.Context) {
 }
 
 func getToken(c *gin.Context) {
-	login, password := getInput(c)
+	login, password, errInput := getInput(c)
+	if errInput != nil {
+		c.AbortWithError(http.StatusBadRequest, errInput)
+		return
+	}
 	loginStruct := authorizationdata.Set{
 		Login:     login,
 		Password:  password,

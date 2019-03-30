@@ -1,0 +1,338 @@
+openapi: 3.0.0
+info:
+  title: Cam4Learn
+  version: 1.0.0 
+  description: Backend part of project.
+paths:
+  /login:
+    post:
+      summary: "User login"
+      description: ""
+      requestBody:
+        description: "User login data"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+              example:
+                login: perdak
+                password: 12QW34
+      responses:
+        400:
+          description: "Missed field"
+        401:
+          description: "Wrong login or password"
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  JWT:
+                    type: string
+  /adminLogin:
+    post:
+      summary: "Admin login"
+      description: ""
+      requestBody:
+        description: "Admin login data"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - login
+                - password
+              properties:
+                login:
+                  type: string
+                password:
+                  type: string
+              example:
+                login: Ricardo
+                password: 1223SW
+      responses:
+        400:
+          description: "Missed field"
+        401:
+          description: "Wrong login or password"
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  JWT:
+                    type: string
+    
+  /api/getSubjects:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all subjects"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectDataObject'
+  
+  /api/getLectorSubjects:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of only lector's subjects"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectDataObject'
+  
+                  
+
+
+  /api/admin/addSubject:
+    post:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Add subject"
+      requestBody:
+        description: "Subject data"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - lector
+                - title
+              properties:
+                lector:
+                  type: integer
+                title:
+                  type: string
+              example:
+                login: 2
+                password: awpz
+      responses:
+        400:
+          description: "Missing field or invalid value of field"
+        200:
+          description: OK
+
+  /api/admin/deleteSubject:
+    delete:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Delete subject"
+      requestBody:
+        description: "Subject's ID"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: integer
+              example:
+                id: 2
+      responses:
+        400:
+          description: "Missing field id in request"
+        200:
+          description: OK
+
+  /api/admin/getSubjects:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all subjects"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectDataObject'
+
+  /api/admin/addLector:
+    post:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Add lector"
+      requestBody:
+        description: "Lector's data"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Lector'
+              example:
+                name: Antonio
+                surname: Perdachelli
+                login: ricardo
+                password: 1234Wq
+      responses:
+        400:
+          description: "Missing field or invalid value of field"
+        200:
+          description: OK
+
+  /api/admin/deleteLector:
+    delete:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Delete Lector"
+      requestBody:
+        description: "Lector's ID"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: integer
+              example:
+                id: 2
+      responses:
+        400:
+          description: "Missing field `id` in request"
+        200:
+          description: OK
+          
+  /api/admin/getLectors:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all lectors"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LectorDataObject'
+
+  /api/admin/changeLector:
+    put:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Change lector's info"
+      requestBody:
+        description: "Lector's data"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Lector'
+              example:
+                name: Antonio
+                surname: Perdachelli
+                login: ricardo
+                password: 
+        responses:
+        400:
+          description: "Missing field or invalid value of field"
+        200:
+          description: OK
+
+components:
+  schemas:
+    SubjectDataObject:
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+    Lector:
+      properties:
+        name:
+          type: string
+        surname:
+          type: string
+        login:
+          type: string
+        password:
+          type: string
+    LectorDataObject:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        surname:
+          type: string

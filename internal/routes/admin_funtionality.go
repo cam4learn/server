@@ -23,6 +23,15 @@ func setAdminRoutes(group *gin.RouterGroup) {
 	adminGroup.DELETE("/deleteLector", deleteLectorHandler)
 	adminGroup.GET("/getLectors", getLectorsHandler)
 	adminGroup.PUT("/changeLector", changeLectorHandler)
+
+	adminGroup.POST("/addSubject/", addSubjectHandler)
+	adminGroup.DELETE("/deleteSubject/", deleteSubjectHandler)
+	adminGroup.GET("/getSubjects/", getSubjectsHandler)
+
+	adminGroup.POST("addLector/", addLectorHandler)
+	adminGroup.DELETE("/deleteLector/", deleteLectorHandler)
+	adminGroup.GET("/getLectors/", getLectorsHandler)
+	adminGroup.PUT("/changeLector/", changeLectorHandler)
 }
 
 func adminMiddleware(c *gin.Context) {
@@ -35,7 +44,11 @@ func adminMiddleware(c *gin.Context) {
 }
 
 func getAdminToken(c *gin.Context) {
-	login, password := getInput(c)
+	login, password, errInput := getInput(c)
+	if errInput != nil {
+		c.AbortWithError(http.StatusBadRequest, errInput)
+		return
+	}
 	loginStruct := authorizationdata.Set{
 		Login:     login,
 		Password:  password,

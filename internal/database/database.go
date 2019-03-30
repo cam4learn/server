@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"server/internal/authorizationdata"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,6 +18,7 @@ func InitializeDB(DSN string) {
 	var err error
 	dbInstance, err = sql.Open("mysql", DSN)
 	if err != nil {
+		fmt.Println("db wasn't opened")
 		panic("DB wasn't opened")
 	}
 }
@@ -29,6 +31,7 @@ func IsAuthenticatedLector(loginData authorizationdata.Set) bool {
 	var result bool
 	err := dbInstance.QueryRow("select count(*) from Lector where Login=(?) and Password=(?)", loginData.Login, loginData.Password).Scan(&result)
 	if err != nil {
+		fmt.Println(err)
 		return false
 	}
 	return result

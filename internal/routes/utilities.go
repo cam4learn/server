@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"net/http"
 	"server/internal/registration"
 	"server/internal/validator"
@@ -8,18 +9,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getInput(c *gin.Context) (string, string) {
-	login, loginOK := c.GetPostForm("login")
-	password, passwordOK := c.GetPostForm("password")
+type login struct {
+	Login    string `json: "login"`
+	Password string `json:"password" `
+}
 
-	if !(loginOK && passwordOK) {
-		c.AbortWithStatus(http.StatusBadRequest)
+func getInput(c *gin.Context) (string, string, error) {
+	//login, loginOK := c.GetPostForm("login")
+	var data login
+	if c.Bind(&data) != nil {
+		return "", "", errors.New("MISSING_FIELDS")
 	}
-	ok, _ := validator.Validate(registration.AuthData{login, password})
+	//password, passwordOK := c.GetPostForm("password")
+
+	//if !(loginOK && passwordOK) {
+	//	return "", "", errors.New("MISSING_FIELDS")
+	//}
+	ok, _ := validator.Validate(registration.AuthData{data.Login, data.Password})
 	if !ok {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		return "", "", errors.New("INCORRECT_DATA")
 	}
-	return login, password
+	return data.Login, data.Password, nil
 }
 
 func adminAddDBAction(c *gin.Context, form *interface{}, action func(interface{})) {
