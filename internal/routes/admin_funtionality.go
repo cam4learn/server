@@ -96,6 +96,7 @@ func deleteLectorHandler(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	fmt.Println(idStruct.Id)
 	if database.IsExistsLector(idStruct.Id) {
 		database.DeleteLector(idStruct.Id)
 		c.Status(http.StatusOK)

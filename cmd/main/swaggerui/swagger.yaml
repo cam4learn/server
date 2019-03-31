@@ -387,7 +387,7 @@ components:
         login:
           type: string
         password:
-          type: strings
+          type: string
     LectorEdit:
       properties:
         id:
@@ -399,7 +399,7 @@ components:
         login:
           type: string
         password:
-          type: strings
+          type: string
     LectorDataObject:
       properties:
         id:
