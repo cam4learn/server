@@ -96,6 +96,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
+         
   /api/lectors:
     get:
       parameters:
@@ -115,6 +120,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LectorDataObject'
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
 
   /api/getLectorSubjects:
     get:
@@ -135,7 +144,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
-  
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
                   
 
 
@@ -153,7 +165,7 @@ paths:
         description: "Subject data"
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               required:
@@ -165,13 +177,17 @@ paths:
                 title:
                   type: string
               example:
-                login: 2
-                password: awpz
+                lector: 2
+                title: awpz
       responses:
         400:
           description: "Missing field or invalid value of field"
         200:
           description: OK
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
 
   /api/admin/deleteSubject:
     delete:
@@ -187,7 +203,7 @@ paths:
         description: "Subject's ID"
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               required:
@@ -202,6 +218,10 @@ paths:
           description: "Missing field id in request"
         200:
           description: OK
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
 
   /api/admin/getSubjects:
     get:
@@ -222,6 +242,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
 
   /api/admin/addLector:
     post:
@@ -237,7 +261,7 @@ paths:
         description: "Lector's data"
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               $ref: '#/components/schemas/Lector'
               example:
@@ -250,6 +274,10 @@ paths:
           description: "Missing field or invalid value of field"
         200:
           description: OK
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
 
   /api/admin/deleteLector:
     delete:
@@ -265,7 +293,7 @@ paths:
         description: "Lector's ID"
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               required:
@@ -280,7 +308,11 @@ paths:
           description: "Missing field `id` in request"
         200:
           description: OK
-          
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
+
   /api/admin/getLectors:
     get:
       parameters:
@@ -300,6 +332,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LectorDataObject'
+        203:
+          description: Expired token
+        403:
+          description: "Invalid token"
 
   /api/admin/changeLector:
     patch:
@@ -315,19 +351,24 @@ paths:
         description: "Lector's data"
         required: true
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
-              $ref: '#/components/schemas/Lector'
+              $ref: '#/components/schemas/LectorEdit'
               example:
+                id: 2
                 name: Antonio
                 surname: Perdachelli
                 login: ricardo
                 password: 
-        responses:
+      responses:
         400:
           description: "Missing field or invalid value of field"
+        403:
+          description: "Invalid token"
         200:
           description: OK
+        203:
+          description: Expired token
 
 components:
   schemas:
@@ -346,7 +387,19 @@ components:
         login:
           type: string
         password:
+          type: strings
+    LectorEdit:
+      properties:
+        id:
+          type: integer
+        name:
           type: string
+        surname:
+          type: string
+        login:
+          type: string
+        password:
+          type: strings
     LectorDataObject:
       properties:
         id:

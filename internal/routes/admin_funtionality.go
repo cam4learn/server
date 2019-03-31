@@ -1,16 +1,20 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"server/internal/authorization"
 	"server/internal/authorizationdata"
 	"server/internal/database"
 	"server/internal/registration"
 	"server/internal/validator"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
+
+type idBind struct {
+	Id int `json:"id"`
+}
 
 func setAdminRoutes(group *gin.RouterGroup) {
 	adminGroup := group.Group("/admin", adminMiddleware)
@@ -63,23 +67,22 @@ func getAdminToken(c *gin.Context) {
 }
 
 func deleteSubjectHandler(c *gin.Context) {
-	idString, ok := c.GetPostForm("id")
-	if !ok {
+	var idStruct idBind
+	if c.Bind(&idStruct) != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	id, err := strconv.Atoi(idString)
-	if err == nil {
-		database.DeleteSubject(id)
-		c.Status(http.StatusOK)
-		return
-	}
-	c.AbortWithStatus(http.StatusBadRequest)
+	fmt.Println(idStruct.Id)
+	database.DeleteSubject(idStruct.Id)
+	c.Status(http.StatusOK)
+	return
 }
 
 func addSubjectHandler(c *gin.Context) {
 	var subject registration.SubjectData
-	if c.Bind(&subject) == nil && len(subject.Title) > 3 && database.IsExistsLector(subject.LectorID) {
+	//&& database.IsExistsLector(subject.LectorID)
+	if c.Bind(&subject) == nil && len(subject.Title) > 3 {
+		fmt.Println(subject)
 		database.AddSubject(subject)
 		c.Status(http.StatusOK)
 		return
@@ -88,14 +91,13 @@ func addSubjectHandler(c *gin.Context) {
 }
 
 func deleteLectorHandler(c *gin.Context) {
-	idString, ok := c.GetPostForm("id")
-	if !ok {
+	var idStruct idBind
+	if c.Bind(&idStruct) != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
-	id, err := strconv.Atoi(idString)
-	if err == nil && database.IsExistsLector(id) {
-		database.DeleteLector(id)
+	if database.IsExistsLector(idStruct.Id) {
+		database.DeleteLector(idStruct.Id)
 		c.Status(http.StatusOK)
 		return
 	}
@@ -123,29 +125,24 @@ func addLectorHandler(c *gin.Context) {
 }
 
 func changeLectorHandler(c *gin.Context) {
-	idString, ok := c.GetPostForm("lectorId")
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"code": "NO_ID"})
-		return
-	}
-	id, err := strconv.Atoi(idString)
-	if err != nil || !database.IsExistsLector(id) {
-		c.JSON(http.StatusBadRequest, gin.H{"code": "WRONG_ID"})
-		return
-	}
-	var lector registration.LectorData
+	var lector registration.LectorDataEdit
 	if c.Bind(&lector) != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	fmt.Println(lector)
 	if len(lector.Password) == 0 {
-		lector.Password = database.GetLectorPassword(id)
+		lector.Password = database.GetLectorPassword(lector.Id)
 	}
 	valid, errValid := validator.Validate(lector)
-	if !valid && errValid != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"code": err.Error()})
+	if !database.IsExistsLector(lector.Id) {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "INVALI_ID"})
 		return
 	}
-	database.UpdateLector(lector, id)
+	if !valid && errValid != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": errValid.Error()})
+		return
+	}
+	database.UpdateLector(lector, lector.Id)
 	c.Status(http.StatusOK)
 }

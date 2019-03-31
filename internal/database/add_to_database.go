@@ -3,7 +3,7 @@ package database
 import "server/internal/registration"
 
 func AddSubject(form registration.SubjectData) {
-	dbInstance.Exec("insert into Subject (LectorID, Title) values (?),(?)", form.LectorID, form.Title)
+	dbInstance.Exec("insert into Subject (LectorID, Title) values ((?), (?))", form.LectorID, form.Title)
 }
 
 func AddLector(form registration.LectorData) {

@@ -76,7 +76,7 @@ func createToken(id int, user string) string {
 }
 
 func createClaims(user string, id int) JWTClaims {
-	expires := time.Now().Add(time.Hour * 4).Unix()
+	expires := time.Now().Add(time.Hour * 244).Unix()
 	resultClaims := JWTClaims{
 		jwt.StandardClaims{
 			ExpiresAt: expires,
