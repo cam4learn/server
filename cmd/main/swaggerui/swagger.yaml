@@ -96,7 +96,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
-  
+  /api/lectors:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all lectors"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LectorDataObject'
+
   /api/getLectorSubjects:
     get:
       parameters:
@@ -283,7 +302,7 @@ paths:
                   $ref: '#/components/schemas/LectorDataObject'
 
   /api/admin/changeLector:
-    put:
+    patch:
       parameters:
         - in: header
           required:

@@ -11,17 +11,18 @@ import (
 
 func CreateRoutes() *gin.Engine {
 	result := gin.Default()
+	result.Use(RequestPermission)
 	result.POST("/adminLogin", getAdminToken)
 	result.POST("/adminLogin/", getAdminToken)
 	result.POST("/login", getToken)
 	result.POST("/login/", getToken)
-	result.Use(RequestPermission)
 	result.Static("/swaggerui/", "./swaggerui")
 	authorized := result.Group("/api", authMiddleware)
 	authorized.GET("/getSubjects", getSubjectsHandler)
 	authorized.GET("/getLectorSubjects", getLectorSubjectsHandler)
 	authorized.GET("/getSubjects/", getSubjectsHandler)
 	authorized.GET("/getLectorSubjects/", getLectorSubjectsHandler)
+	authorized.GET("lectors", getLectorsHandler)
 
 	setAdminRoutes(authorized)
 	return result
@@ -49,7 +50,7 @@ func getToken(c *gin.Context) {
 	}
 	token, err := authorization.GetLectorToken(loginStruct)
 	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.AbortWithStatus(401)
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"JWT": token})
