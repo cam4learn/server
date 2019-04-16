@@ -25,7 +25,7 @@ func setAdminRoutes(group *gin.RouterGroup) {
 
 	adminGroup.POST("addLector", addLectorHandler)
 	adminGroup.DELETE("/deleteLector", deleteLectorHandler)
-	adminGroup.GET("/getLectors", getLectorsHandler)
+	adminGroup.GET("/getLectors", getLectorsAdminHandler)
 	adminGroup.PATCH("/changeLector", changeLectorHandler)
 
 	adminGroup.POST("/addSubject/", addSubjectHandler)
@@ -34,8 +34,17 @@ func setAdminRoutes(group *gin.RouterGroup) {
 
 	adminGroup.POST("addLector/", addLectorHandler)
 	adminGroup.DELETE("/deleteLector/", deleteLectorHandler)
-	adminGroup.GET("/getLectors/", getLectorsHandler)
+	adminGroup.GET("/getLectors/", getLectorsAdminHandler)
 	adminGroup.PATCH("/changeLector/", changeLectorHandler)
+
+	adminGroup.DELETE("/device", deleteDeviceHandler)
+	adminGroup.DELETE("/device/", deleteDeviceHandler)
+	adminGroup.GET("/device", getDevicesHandler)
+	adminGroup.GET("/device/", getDevicesHandler)
+	adminGroup.POST("/device", addDeviceHandler)
+	adminGroup.POST("/device/", addDeviceHandler)
+	adminGroup.PATCH("/device", editDeviceHandler)
+	adminGroup.PATCH("/device/", editDeviceHandler)
 }
 
 func adminMiddleware(c *gin.Context) {
@@ -105,8 +114,8 @@ func deleteLectorHandler(c *gin.Context) {
 	c.AbortWithStatus(http.StatusBadRequest)
 }
 
-func getLectorsHandler(c *gin.Context) {
-	data := database.GetLectorsList()
+func getLectorsAdminHandler(c *gin.Context) {
+	data := database.GetLectorsListAdmin()
 	c.JSON(http.StatusOK, data)
 }
 
@@ -116,6 +125,7 @@ func addLectorHandler(c *gin.Context) {
 		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
+	fmt.Println(lector)
 	ok, err := validator.Validate(lector)
 	if ok && err == nil {
 		database.AddLector(lector)
@@ -145,5 +155,56 @@ func changeLectorHandler(c *gin.Context) {
 		return
 	}
 	database.UpdateLector(lector, lector.Id)
+	c.Status(http.StatusOK)
+}
+
+func addDeviceHandler(c *gin.Context) {
+	var device registration.DeviceData
+	if c.Bind(&device) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	valid, errValid := validator.Validate(device)
+	if !valid && errValid != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": errValid.Error()})
+		return
+	}
+	database.AddDevice(device)
+	c.Status(http.StatusOK)
+}
+
+func deleteDeviceHandler(c *gin.Context) {
+	var idStruct idBind
+	if c.Bind(&idStruct) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	fmt.Println(idStruct.Id)
+	database.DeleteDevice(idStruct.Id)
+	c.Status(http.StatusOK)
+}
+
+func getDevicesHandler(c *gin.Context) {
+	data := database.GetDevicesListAdmin()
+	c.JSON(http.StatusOK, data)
+}
+
+func editDeviceHandler(c *gin.Context) {
+	var device registration.DeviceDataEdit
+	if c.Bind(&device) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	fmt.Println(device)
+	valid, errValid := validator.Validate(device)
+	if !database.IsExistsDevice(device.Id) {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "INVALI_ID"})
+		return
+	}
+	if !valid && errValid != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"code": errValid.Error()})
+		return
+	}
+	database.UpdateDevice(device, device.Id)
 	c.Status(http.StatusOK)
 }

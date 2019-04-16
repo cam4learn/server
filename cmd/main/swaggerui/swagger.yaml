@@ -24,8 +24,8 @@ paths:
                 password:
                   type: string
               example:
-                login: perdak
-                password: 12QW34
+                login: sergey
+                password: QWER123
       responses:
         400:
           description: "Missed field"
@@ -96,7 +96,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -120,7 +120,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LectorDataObject'
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -144,7 +144,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -184,7 +184,7 @@ paths:
           description: "Missing field or invalid value of field"
         200:
           description: OK
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -218,7 +218,7 @@ paths:
           description: "Missing field id in request"
         200:
           description: OK
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -242,7 +242,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/SubjectDataObject'
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -274,7 +274,7 @@ paths:
           description: "Missing field or invalid value of field"
         200:
           description: OK
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -308,7 +308,7 @@ paths:
           description: "Missing field `id` in request"
         200:
           description: OK
-        203:
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -331,8 +331,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/LectorDataObject'
-        203:
+                  $ref: '#/components/schemas/LectorAdminDataObject'
+        401:
           description: Expired token
         403:
           description: "Invalid token"
@@ -357,7 +357,7 @@ paths:
               example:
                 id: 2
                 name: Antonio
-                surname: Perdachelli
+                surname: Puckacchi
                 login: ricardo
                 password: 
       responses:
@@ -367,9 +367,202 @@ paths:
           description: "Invalid token"
         200:
           description: OK
-        203:
+        401:
+          description: Expired token
+  
+  /api/admin/device:
+    delete:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Delete Device"
+      requestBody:
+        description: "Devices's ID"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: integer
+              example:
+                id: 2
+      responses:
+        400:
+          description: "Missing field `id` in request"
+        200:
+          description: OK
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all devices"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Device'
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
+    post:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Add device"
+      requestBody:
+        description: "Device's data"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceAdd'
+              example:
+                address: Antonio
+                room: 104
+      responses:
+        400:
+          description: "Missing field or invalid value of field"
+        200:
+          description: OK
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"     
+    patch:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Change devices's info"
+      requestBody:
+        description: "Device's data"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeviceEdit'
+              example:
+                id: 2
+                room: 104
+                address: Puckacchi
+      responses:
+        400:
+          description: "Missing field or invalid value of field"
+        403:
+          description: "Invalid token"
+        200:
+          description: OK
+        401:
           description: Expired token
 
+
+  /api/subjectStatisticJson:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+        - in: query
+          name: subjectId
+          schema:
+            type: integer
+          example: 7
+      summary: "Get statistic of subject"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SecondExportStruct'                
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
+  /api/subjectStatisticCsv:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+        - in: query
+          name: subjectId
+          schema:
+            type: integer
+          example: 7
+      summary: "Get statistic of subject"
+      responses:
+        200:
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SecondExportStruct'                  
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
+  /api/getSubjectsCsv:
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all subjects"
+      responses:
+        200:
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubjectDataObject'
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
 components:
   schemas:
     SubjectDataObject:
@@ -377,6 +570,10 @@ components:
         id:
           type: integer
         title:
+          type: string
+        name:
+          type: string
+        surname:
           type: string
     Lector:
       properties:
@@ -408,3 +605,54 @@ components:
           type: string
         surname:
           type: string
+    LectorAdminDataObject:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        surname:
+          type: string
+        login:
+          type: string
+    Device:
+      properties:
+        id:
+          type: integer
+        room:
+          type: string
+    DeviceAdd:
+      properties:
+        address:
+          type: string
+        room:
+          type: string 
+    DeviceEdit:
+      properties:
+        id:
+          type: integer
+        address:
+          type: string
+        room:
+          type: string
+    SecondExportAttendanceStruct:
+      properties:
+        surname:
+          type: string
+        group:
+          type: string
+        value:
+          type: integer
+        isPresent:
+          type: boolean
+    SecondExportStruct:
+      properties:
+        date:
+          type: string
+        subject:
+          type: string
+        attendanceList:
+          type: array
+          items:
+            type: object
+            $ref: '#/components/schemas/SecondExportAttendanceStruct' 

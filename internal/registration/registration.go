@@ -25,8 +25,8 @@ type SubjectData struct {
 }
 
 type DeviceData struct {
-	Room      string `form:"room" binding:"required"`
-	MACAdress string `form:"adress" binding:"required"`
+	Room      string `json:"room" binding:"required"`
+	MACAdress string `json:"address" binding:"required"`
 }
 
 type LectorDataEdit struct {
@@ -35,4 +35,10 @@ type LectorDataEdit struct {
 	Surname  string `form:"surname" json:"surname" binding:"required"`
 	Login    string `form:"login" json:"login" binding:"required"`
 	Password string `form:"password" json:"password"`
+}
+
+type DeviceDataEdit struct {
+	Id        int    `json:"id"`
+	Room      string `json:"room" binding:"required"`
+	MACAdress string `json:"address" binding:"required"`
 }
