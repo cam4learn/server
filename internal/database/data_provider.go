@@ -57,3 +57,9 @@ func GetDevicesListAdmin() []DeviceAdminData {
 	result := dbRowsToObjects(resultRows, &DeviceAdminData{}).([]DeviceAdminData)
 	return result
 }
+
+func GetGroupsAdmin() []GroupToList {
+	resultRows, _ := dbInstance.Query("Select ID, Name from StudentGroup")
+	result := dbRowsToObjects(resultRows, &GroupToList{}).([]GroupToList)
+	return result
+}

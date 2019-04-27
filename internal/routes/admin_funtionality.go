@@ -8,6 +8,7 @@ import (
 	"server/internal/database"
 	"server/internal/registration"
 	"server/internal/validator"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +46,15 @@ func setAdminRoutes(group *gin.RouterGroup) {
 	adminGroup.POST("/device/", addDeviceHandler)
 	adminGroup.PATCH("/device", editDeviceHandler)
 	adminGroup.PATCH("/device/", editDeviceHandler)
+
+	adminGroup.DELETE("/group", deleteGroupHandler)
+	adminGroup.DELETE("/group/", deleteGroupHandler)
+	adminGroup.GET("/group", getGroupsHandler)
+	adminGroup.GET("/group/", getGroupsHandler)
+	adminGroup.POST("/group", addGroupHandler)
+	adminGroup.POST("/group/", addGroupHandler)
+	adminGroup.PATCH("/group", editGroupHandler)
+	adminGroup.PATCH("/group/", editGroupHandler)
 }
 
 func adminMiddleware(c *gin.Context) {
@@ -206,5 +216,59 @@ func editDeviceHandler(c *gin.Context) {
 		return
 	}
 	database.UpdateDevice(device, device.Id)
+	c.Status(http.StatusOK)
+}
+
+func getGroupsHandler(c *gin.Context) {
+	result := database.GetGroupsAdmin()
+	c.JSON(http.StatusOK, result)
+}
+
+func addGroupHandler(c *gin.Context) {
+	var group registration.GroupAddData
+	if c.Bind(&group) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	if len(group.Name) < 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "TO_SHORT_NAME"})
+		return
+	}
+	database.AddGroup(group)
+	c.Status(http.StatusOK)
+}
+
+func deleteGroupHandler(c *gin.Context) {
+	//if c.BindQuery(&idStruct) != nil {
+	//	c.AbortWithStatus(http.StatusBadRequest)
+	//	return
+	//}
+	idStr, _ := c.GetQuery("id")
+	Id, err := strconv.Atoi(idStr)
+	if err != nil || Id == 0 {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	fmt.Println(Id)
+	database.DeleteGroup(Id)
+	c.Status(http.StatusOK)
+}
+
+func editGroupHandler(c *gin.Context) {
+	var group registration.GroupEditData
+	if c.Bind(&group) != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+	fmt.Println(group)
+	if !database.IsExistsGroup(group.Id) {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "INVALI_ID"})
+		return
+	}
+	if len(group.Name) < 2 {
+		c.JSON(http.StatusBadRequest, gin.H{"code": "BAD_NAME"})
+		return
+	}
+	database.UpdateGroup(group, group.Id)
 	c.Status(http.StatusOK)
 }

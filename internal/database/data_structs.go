@@ -114,3 +114,12 @@ type SecondExport1 struct {
 	Subject         string           `json:"subject" csv:"subject"`
 	AttendatnceList []StudentExport1 `json:"attendanceList" csv:"attendanceList"`
 }
+
+type GroupToList struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+func (s *GroupToList) BindToFields(row *sql.Rows) {
+	row.Scan(&s.Id, &s.Name)
+}

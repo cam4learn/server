@@ -17,3 +17,7 @@ func AddDevice(form registration.DeviceData) {
 	dbInstance.Exec("insert into Device (Room, MACAdress) values ((?), (?))",
 		form.Room, form.MACAdress)
 }
+
+func AddGroup(form registration.GroupAddData) {
+	dbInstance.Exec("insert into StudentGroup (Name) values ((?))", form.Name)
+}

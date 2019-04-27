@@ -11,3 +11,7 @@ func DeleteLector(ID int) {
 func DeleteDevice(ID int) {
 	dbInstance.Exec("delete from Device where ID=(?)", ID)
 }
+
+func DeleteGroup(ID int) {
+	dbInstance.Exec("delete from StudentGroup where ID=(?)", ID)
+}

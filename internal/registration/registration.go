@@ -42,3 +42,12 @@ type DeviceDataEdit struct {
 	Room      string `json:"room" binding:"required"`
 	MACAdress string `json:"address" binding:"required"`
 }
+
+type GroupAddData struct {
+	Name string `json:"name"`
+}
+
+type GroupEditData struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}

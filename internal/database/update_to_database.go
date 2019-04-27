@@ -11,3 +11,8 @@ func UpdateDevice(form registration.DeviceDataEdit, ID int) {
 	dbInstance.Exec("update Device set Room = (?), MACAdress = (?) where ID = (?)",
 		form.Room, form.MACAdress, ID)
 }
+
+func UpdateGroup(form registration.GroupEditData, ID int) {
+	dbInstance.Exec("update StudentGroup set Name = (?) where ID = (?)",
+		form.Name, ID)
+}

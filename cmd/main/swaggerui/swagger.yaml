@@ -483,6 +483,109 @@ paths:
         401:
           description: Expired token
 
+  /api/admin/group:
+    delete:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+        - in: query
+          name: id
+          schema:
+            type: integer
+            example: 1
+
+      summary: "Delete Group"
+        
+      responses:
+        400:
+          description: "Missing field `id` in request"
+        200:
+          description: OK
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
+    get:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Get list of all groups"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"
+    post:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Add group"
+      requestBody:
+        description: "Group's data"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GroupAdd'
+              example:
+                name: PZPI
+      responses:
+        400:
+          description: "Missing field or invalid value of field"
+        200:
+          description: OK
+        401:
+          description: Expired token
+        403:
+          description: "Invalid token"     
+    patch:
+      parameters:
+        - in: header
+          required:
+            - JWT
+          name: JWT
+          schema:
+            type: string
+      summary: "Change group's info"
+      requestBody:
+        description: "Group's data"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Group'
+              example:
+                id: 2
+                name: Puckacchi
+      responses:
+        400:
+          description: "Missing field or invalid value of field"
+        403:
+          description: "Invalid token"
+        200:
+          description: OK
+        401:
+          description: Expired token
 
   /api/subjectStatisticJson:
     get:
@@ -656,3 +759,13 @@ components:
           items:
             type: object
             $ref: '#/components/schemas/SecondExportAttendanceStruct' 
+    Group:
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+    GroupAdd:
+      properties:
+        name:
+          type: string

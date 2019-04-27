@@ -31,12 +31,15 @@ func CreateRoutes() *gin.Engine {
 	authorized.GET("/getLectorSubjects", getLectorSubjectsHandler)
 	authorized.GET("/getSubjects/", getSubjectsHandler)
 	authorized.GET("/getLectorSubjects/", getLectorSubjectsHandler)
+
 	authorized.GET("/lectors", getLectorsHandler)
+
 	authorized.GET("/subjectStatisticJson", getSubjectStatisticJsonHandler)
 	authorized.GET("/subjectStatisticJson/", getSubjectStatisticJsonHandler)
 	authorized.GET("/subjectStatisticCsv", getSubjectStatisticCsvHandler)
 	authorized.GET("/subjectStatisticCsv/", getSubjectStatisticCsvHandler)
 	authorized.GET("/getSubjectsCsv/", getSubjectsCsvHandler)
+
 	authorized.GET("/getLectorSubjectsCsv/", getSubjectsCsvHandler)
 	setAdminRoutes(authorized)
 	return result

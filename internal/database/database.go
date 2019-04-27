@@ -104,11 +104,12 @@ func getLecturesForOutput(subjectID int) *sql.Rows {
 
 func getStudentsForOutput(lectureID int) *sql.Rows {
 	result, _ := dbInstance.Query(
-		"select Student.Surname, Student.GroupName, Mark.IsPresent, Mark.Value "+
+		"select Student.Surname, StudentGroup.Name, Mark.IsPresent, Mark.Value "+
 			"from Mark "+
 			"inner join Student on Mark.StudentID = Student.ID "+
+			"join StudentGroup on Student.GroupID=StudentGroup.ID "+
 			"where Mark.LectureID = (?) "+
-			"order by Mark.LectureID, Student.GroupName ", lectureID)
+			"order by Mark.LectureID, StudentGroup.Name ", lectureID)
 	return result
 }
 
@@ -131,10 +132,20 @@ func GenerateJSONForLecuteCourse1(subjectID int) []SecondExport1 {
 
 func getStudentsForOutput1(lectureID int) *sql.Rows {
 	result, _ := dbInstance.Query(
-		"select Student.ID, Student.Surname, Student.GroupName, Mark.IsPresent, Mark.Value "+
+		"select Student.ID, Student.Surname, StudentGroup.Name, Mark.IsPresent, Mark.Value "+
 			"from Mark "+
 			"inner join Student on Mark.StudentID = Student.ID "+
+			"join StudentGroup on Student.GroupID=StudentGroup.ID "+
 			"where Mark.LectureID = (?) "+
-			"order by Mark.LectureID, Student.GroupName ", lectureID)
+			"order by Mark.LectureID, StudentGroup.Name ", lectureID)
+	return result
+}
+
+func IsExistsGroup(ID int) bool {
+	var result bool
+	err := dbInstance.QueryRow("select count(*) from StudentGroup where ID = (?)", ID).Scan(&result)
+	if err != nil {
+		return false
+	}
 	return result
 }

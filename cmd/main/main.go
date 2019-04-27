@@ -13,7 +13,7 @@ func main() {
 	//field1, _ := type1.FieldByName("Name")
 	//fmt.Println(field1.Tag)
 	//gin.SetMode(gin.ReleaseMode)
-	database.InitializeDB("admin:12345678@/courseProjectDB")
+	database.InitializeDB("admin:admin@/courseProjectDB")
 	//result := database.GetSubjectsList()
 	//fmt.Println(gin.H{"data": result})
 	//recognizer.InitializeRecognizor()
